@@ -1,4 +1,5 @@
-from datetime import datetime
+import asyncio
+from datetime import datetime, timedelta
 
 from aiogram.types import (
     InlineKeyboardMarkup,
@@ -15,8 +16,32 @@ from loguru import logger
 
 from database.init import db
 from utils.try_do import try_do
+from config.init import conf
 
+from .keyboards import kb
 from .init import bot
+
+
+@try_do(1, 'warning')
+async def deadline_notify():
+    logger.info('Запущена задача на уведомление о просрочке ответа')
+    tasks = db.tech_task.get_with_deadline_smaller_than(datetime.now() + timedelta(minutes=30))
+    users = db.user.get_all_with_role(conf.roles.constructor)
+    for task in tasks:
+        left = task.deadline - datetime.now()
+        left = int(left.seconds / 60) 
+        for user in users:
+            answer = db.answer.get_by_ids(task.id, user.id)
+            if not answer:
+                logger.info(f'Пользователь {user.id} не ответил на ТЗ, отправка уведомления...')
+                await send_tech_task(
+                    chat_id=user.id,
+                    task_id=task.id,
+                    reply_markup=kb.constructor.answer(task.id),
+                    start_text=f'Вы не ответили на это тз, у вас осталось {left} минут!\n\n'
+                )
+                await asyncio.sleep(2)
+
 
 @try_do(1, 'warning')
 def parse_datetime(string: str, format: str = "%d.%m.%Y %H:%M"):

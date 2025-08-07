@@ -8,11 +8,14 @@ import asyncio
 from loguru import logger
 
 from bot.midlewares import AddUser, UpdateLogger
-from bot.init import dp, bot, q
+from bot.init import dp, bot, q, scheduler
+from bot.misc import deadline_notify
 
 
 async def on_startup():
     bot_info = await bot.get_me()
+    scheduler.add_job(deadline_notify, "interval", minutes=10, misfire_grace_time=599)
+    scheduler.start()
     logger.info(f'Бот {bot_info.username} успешно запущен!')
 
 

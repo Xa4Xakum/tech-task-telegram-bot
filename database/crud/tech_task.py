@@ -66,6 +66,16 @@ class Get(BaseCrud):
                 desc(TechTask.update_at)
             ).all()
 
+    def get_with_deadline_smaller_than(self, deadline: datetime) -> List[TechTask]:
+        with self.session() as s:
+            return s.query(
+                TechTask
+            ).filter(
+                TechTask.deadline < deadline,
+                TechTask.deadline > datetime.now()
+            ).all()
+
+
 class Update(BaseCrud):
     '''Методы изменения технических заданий'''
 
