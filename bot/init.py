@@ -1,3 +1,5 @@
+import queue
+
 from aiogram import Bot, Dispatcher
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -8,6 +10,5 @@ from .midlewares import UpdateLogger, AddUser
 
 bot = Bot(token=conf.bot_token)
 dp = Dispatcher()
-dp.update.outer_middleware(AddUser())
-dp.update.middleware(UpdateLogger())
 scheduler = AsyncIOScheduler()
+q = queue.Queue()

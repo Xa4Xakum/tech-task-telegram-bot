@@ -37,6 +37,16 @@ class Get(BaseCrud):
             ).first()
 
 
+    def get_all_with_role(
+        self,
+        role: str,
+    ) -> List[User]:
+        with self.session() as s:
+            return s.query(User).filter(
+                User.role == role
+            ).all()
+
+
     def get_all(self) -> List[User]:
         with self.session() as s:
             return s.query(

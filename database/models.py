@@ -10,10 +10,10 @@ from .base import Base
 
 
 class Media(Base):
-    __tablename__ = 'step_media'
+    __tablename__ = 'task_media'
 
     task_id: Mapped[int] = mapped_column(Integer, ForeignKey('tech_tasks.id', ondelete='CASCADE'), primary_key=True)
-    media_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    file_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     media_type: Mapped[str] = mapped_column(String)
 
 
@@ -33,6 +33,7 @@ class TechTask(Base):
     owner_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     deadline: Mapped[datetime] = mapped_column(DateTime)
     status: Mapped[str] = mapped_column(String)
+    update_at: Mapped[datetime] = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now)
 
     media: Mapped[List['Media']] = relationship(
         'Media',

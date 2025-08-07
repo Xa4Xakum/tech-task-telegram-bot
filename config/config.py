@@ -5,8 +5,13 @@ from dotenv import load_dotenv
 
 
 class Roles():
-    constructor = 'конструктор'
-    manager = 'менеджер'
+    constructor = 'Конструктор'
+    manager = 'Менеджер'
+
+
+class TaskStatuses():
+    open = 'Открыт'
+    close = 'Закрыт'
 
 
 class Config():
@@ -15,6 +20,7 @@ class Config():
     def __init__(self, env_path: str) -> None:
         self.env_path = env_path
         self.roles = Roles()
+        self.task_statuses = TaskStatuses()
         load_dotenv(env_path)
 
     def _get_from_env(self, key: str, to_int: bool = False) -> Any:

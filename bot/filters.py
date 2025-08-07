@@ -15,14 +15,6 @@ class ChatType(BaseFilter):
         return message.chat.type in self.chat_types
 
 
-class ContentType(BaseFilter):
-    def __init__(self, *content_types: str):
-        self.content_types = content_types
-
-    async def __call__(self, message: Message) -> bool:
-        return message.content_type in self.content_types
-
-
 class ChatsId(BaseFilter):
     def __init__(self, *chats: int):
         self.chats = chats

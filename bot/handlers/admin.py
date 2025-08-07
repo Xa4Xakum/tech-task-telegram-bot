@@ -7,6 +7,9 @@ from database.init import db
 from utils.misc import try_to_int
 
 from ..filters import FromId
+from ..init import q
+from ..misc import send_tech_task
+from ..keyboards import kb
 
 r = Router()
 r.message.filter(
@@ -23,9 +26,57 @@ async def help(msg: Message):
         '/list_users — список всех пользователей по ролям\n'
         '/add_manager <id> - добавить менеджера, id - id менеджера в тг\n'
         '/remove_manager <id> - удалить менеджера, id - id менеджера в тг\n'
-        '/add_consctructor <id> - добавить конструктора, id - id конструктора в тг\n'
+        '/add_constructor <id> - добавить конструктора, id - id конструктора в тг\n'
         '/remove_constructor <id> - удалить конструктора, id - id конструктора в тг\n'
+        '/send_task <task_id> <user_id> - отправить тз определенному пользователю с кнопкой "ответить". task_id - id ТЗ, user_id - id конструктора\n'
+        '/remove_user <id> - удалить пользователя из бд, id - id в телеграме\n'
     )
+
+
+@r.message(Command('send_task'))
+async def send_task(msg: Message):
+    params = msg.text.split(' ')
+
+    if len(params) < 3:
+        await msg.answer('Необходимо указать id тз и id получателя')
+        return
+
+    task_id = try_to_int(params[1])
+    if isinstance(id, str):
+        await msg.answer(f'{id} не является числом')
+        return
+
+    user_id = try_to_int(params[2])
+    if isinstance(id, str):
+        await msg.answer(f'{id} не является числом')
+        return
+
+    q.put(
+        send_tech_task(
+            user_id,
+            task_id,
+            kb.constructor.answer(task_id)
+        )
+    )
+    await msg.answer('Задача добавлена в очередь!')
+
+
+@r.message(Command('remove_user'))
+async def remove_user(msg: Message):
+    params = msg.text.split(' ')
+
+    if len(params) == 1:
+        await msg.answer('Необходимо указать id')
+        return
+
+    id = try_to_int(params[1])
+    if isinstance(id, str):
+        await msg.answer(f'{id} не является числом')
+        return
+
+
+    db.user.del_by_id(id)
+    await msg.answer(f'Пользователь {id} удален!')
 
 
 @r.message(Command('list_users'))
@@ -36,9 +87,9 @@ async def list_users(msg: Message):
 
     for user in users:
         index += 1
-        username = f'<code>@{user.username}</code>' if user.username else 'без юзернейма'
+        username = f'@{user.username}' if user.username else 'без юзернейма'
         role = user.role if user.role else 'без роли'
-        text += f'{index:<2}|{user.id:<11}|{username:<11}|{role}\n'
+        text += f'{index:<2}|<code>{user.id:<11}</code>|<code>{username:<12}</code>|{role}\n'
 
     await msg.answer(text, parse_mode='html')
 
@@ -77,7 +128,7 @@ async def remove_manager(msg: Message):
     await msg.answer(f'Пользователь {id} больше не менеджер!')
 
 
-@r.message(Command('add_consctructor'))
+@r.message(Command('add_constructor'))
 async def add_consctructor(msg: Message):
     params = msg.text.split(' ')
 
