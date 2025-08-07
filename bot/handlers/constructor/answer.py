@@ -26,6 +26,18 @@ r.message.filter(
     StateFilter(ConstructorStates.tasks_history)
 )
 async def answer_reply(msg: Message, state: FSMContext):
+    data = await state.get_data()
+    task_id = data.get('task_id')
+
+    if not task_id:
+        await msg.answer('Странно.. я забыл id ТЗ, напишите об этом менеджеру')
+        return
+
+    answer = db.answer.get_by_ids(task_id, msg.from_user.id)
+    if answer:
+        await msg.answer('Вы уже ответили на это ТЗ')
+        return
+
     await msg.answer(f'Отправьте примерную стоимость выполнения ТЗ')
     await state.set_state(ConstructorStates.get_price)
 
@@ -37,7 +49,11 @@ async def answer_callback(call: CallbackQuery, state: FSMContext):
 
     if not task:
         await call.message.answer(f'ТЗ #{task_id} не найдено, возможно оно было удалено')
-        await state.clear()
+        return
+
+    answer = db.answer.get_by_ids(task_id, call.from_user.id)
+    if answer:
+        await call.answer('Вы уже ответили на это тз')
         return
 
     await call.message.answer(f'Отправьте примерную стоимость выполнения ТЗ')
