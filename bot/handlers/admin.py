@@ -45,19 +45,30 @@ async def send_task(msg: Message):
     if isinstance(id, str):
         await msg.answer(f'{id} не является числом')
         return
+    
+    user_ids = params[2]
+    if ',' in user_ids: user_ids = user_ids.split(',')
+    user_ids = try_to_int(user_ids)
 
-    user_id = try_to_int(params[2])
-    if isinstance(id, str):
-        await msg.answer(f'{id} не является числом')
+    if isinstance(user_ids, str):
+        await msg.answer(f'{user_ids} не является числом')
         return
 
-    q.put(
-        send_tech_task(
-            user_id,
-            task_id,
-            kb.constructor.answer(task_id)
+    if isinstance(user_ids, int): user_ids = [user_ids]
+    for user_id in user_ids:
+        user = db.user.get_by_id(user_id)
+
+        if user.role != conf.roles.constructor:
+            await msg.answer(f'Пользователь {user.id}(@{user.username}) не является конструктором')
+            continue
+
+        q.put(
+            send_tech_task(
+                user_id,
+                task_id,
+                kb.constructor.answer(task_id)
+            )
         )
-    )
     await msg.answer('Задача добавлена в очередь!')
 
 
