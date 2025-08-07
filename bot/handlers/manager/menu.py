@@ -9,7 +9,7 @@ from config.init import conf
 
 from ...keyboards import kb
 from ...filters import ChatType, Role
-from ...states import CreateTaskStates
+from ...states import ManagerStates
 
 r = Router()
 r.message.filter(
@@ -18,8 +18,8 @@ r.message.filter(
 )
 
 
-@r.message(F.data==kb.btn.cancel.text, StateFilter(CreateTaskStates))
-@r.message(F.data==kb.btn.to_menu.text)
+@r.message(F.text==kb.btn.cancel.text, StateFilter(ManagerStates))
+@r.message(F.text==kb.btn.to_menu.text)
 @r.message(Command('start'))
 async def start(msg: Message, state: FSMContext):
     await state.clear()
@@ -28,9 +28,4 @@ async def start(msg: Message, state: FSMContext):
 
 @r.message(F.text == kb.btn.manager.opened_tasks.text)
 async def opened_task(msg: Message):
-    await msg.answer('В разработке...')
-
-
-@r.message(F.text == kb.btn.manager.tasks_history.text)
-async def task_history(msg: Message):
     await msg.answer('В разработке...')

@@ -1,35 +1,42 @@
+import asyncio
 from datetime import datetime
 
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command, StateFilter
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from loguru import logger
 
 from config.init import conf
-from utils.misc import try_to_int
+from utils.misc import extract_media_info
 from database.init import db
 
 from ...keyboards import kb
 from ...filters import ChatType, Role
-from ...states import ConstructorStates
-from ...misc import send_tech_task, send_task_answer
+from ...states import ManagerStates
+from ...misc import send_tech_task, parse_datetime
+from ...init import q
 
 r = Router()
 r.message.filter(
     ChatType('private'),
-    Role(conf.roles.constructor)
+    Role(conf.roles.manager)
 )
 
 
-@r.message(F.text == kb.btn.constructor.tasks_history.text)
+@r.message(
+    F.text == kb.btn.manager.back_to_tasks.text,
+    StateFilter(ManagerStates.task_answers)
+)
+@r.message(F.text == kb.btn.manager.tasks_history.text)
 async def task_history(msg: Message, state: FSMContext):
     await send_corusel(msg, state)
 
 
 @r.message(
     F.text == kb.btn.next.text,
-    StateFilter(ConstructorStates.tasks_history)
+    StateFilter(ManagerStates.tasks_history)
 )
 async def next(msg: Message, state: FSMContext):
     data = await state.get_data()
@@ -40,7 +47,7 @@ async def next(msg: Message, state: FSMContext):
 
 @r.message(
     F.text == kb.btn.previous.text,
-    StateFilter(ConstructorStates.tasks_history)
+    StateFilter(ManagerStates.tasks_history)
 )
 async def previous(msg: Message, state: FSMContext):
     data = await state.get_data()
@@ -64,38 +71,26 @@ async def send_corusel(msg: Message, state: FSMContext):
 
     task = tasks[task_index]
     user_id = msg.from_user.id
-    user_answer = db.answer.get_by_ids(task_id=task.id, user_id=user_id)
-    start_text = f'{task_index + 1}/{len(tasks)}\n'
+    answers = db.answer.get_by_task(task_id=task.id)
+    avarage = 0
+    for i in answers:
+        avarage += i.price
+    if avarage != 0: avarage = round(avarage / len(answers), 2)
 
-    if not user_answer:
-        start_text += '❌Вы не ответили на ТЗ\n\n'
-        if task.deadline > datetime.now(): markup = kb.constructor.corusel_with_answer
-        else: markup = kb.corusel
-    else:
-        start_text += '✅Вы ответили на ТЗ\n\n'
-        markup = kb.constructor.corusel_with_show_answer
+    start_text = (
+        f'{task_index + 1}/{len(tasks)}\n'
+        f'Кол-во ответов: {len(answers)}\n'
+        f'Средняя цена: {avarage}\n\n'
+    )
+
+    if len(answers) > 0: markup = kb.manager.opened_tasks_corusel_with_show_answers
+    else: markup = kb.corusel
         
     await state.update_data(task_index=task_index, task_id=task.id)
-    await state.set_state(ConstructorStates.tasks_history)
+    await state.set_state(ManagerStates.tasks_history)
     await send_tech_task(
         user_id,
         task.id,
         reply_markup=markup,
         start_text=start_text
     )
-
-
-@r.message(
-    F.text == kb.btn.constructor.show_answer.text,
-    StateFilter(ConstructorStates.tasks_history)
-)
-async def show_answer(msg: Message, state: FSMContext):
-    data = await state.get_data()
-    task_id = data.get('task_id')
-    task = db.tech_task.get_by_id(task_id)
-
-    if not task:
-        await msg.answer('Кажется кто-то только что удалил ТЗ.. Если проблема повторится - напишите менеджеру')
-        return
-
-    await send_task_answer(msg.from_user.id, task.id, msg.from_user.id)

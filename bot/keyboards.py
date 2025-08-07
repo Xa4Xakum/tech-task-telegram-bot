@@ -47,6 +47,25 @@ class ManagerKeyboards(BaseKeyboard):
             self.btn.manager.tasks_history,
         )
 
+    @property
+    def opened_tasks_corusel_with_show_answers(self):
+        return self.reply_markup_from_buttons(
+            self.btn.previous,
+            self.btn.manager.show_answers,
+            self.btn.next,
+            self.btn.to_menu,
+            adjust=[3,1]
+        )
+
+    @property
+    def corusel_with_back_to_tasks(self):
+        return self.reply_markup_from_buttons(
+            self.btn.previous,
+            self.btn.manager.back_to_tasks,
+            self.btn.next,
+            self.btn.to_menu,
+            adjust=[3,1]
+        )
 
 class ConstructorKeyboards(BaseKeyboard):
     '''Клавиатуры конструкторов'''
@@ -59,16 +78,7 @@ class ConstructorKeyboards(BaseKeyboard):
         )
 
     @property
-    def opened_tasks_corusel(self):
-        return self.reply_markup_from_buttons(
-            self.btn.previous,
-            self.btn.next,
-            self.btn.to_menu,
-            adjust=[2,1]
-        )
-
-    @property
-    def opened_tasks_corusel_with_answer(self):
+    def corusel_with_answer(self):
         return self.reply_markup_from_buttons(
             self.btn.previous,
             self.btn.constructor.answer_reply,
@@ -78,7 +88,7 @@ class ConstructorKeyboards(BaseKeyboard):
         )
 
     @property
-    def opened_tasks_corusel_with_show_answer(self):
+    def corusel_with_show_answer(self):
         return self.reply_markup_from_buttons(
             self.btn.previous,
             self.btn.constructor.show_answer,
@@ -135,6 +145,15 @@ class Keyboards(BaseKeyboard):
     def to_menu(self):
         return self.reply_markup_from_buttons(
             self.btn.to_menu,
+        )
+
+    @property
+    def corusel(self):
+        return self.reply_markup_from_buttons(
+            self.btn.previous,
+            self.btn.next,
+            self.btn.to_menu,
+            adjust=[2,1]
         )
 
 

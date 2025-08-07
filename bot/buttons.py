@@ -8,6 +8,8 @@ class ManagerButtons():
     create_task = KeyboardButton(text='Создать ТЗ')
     opened_tasks = KeyboardButton(text='Открытые ТЗ')
     tasks_history = KeyboardButton(text='История ТЗ')
+    show_answers = KeyboardButton(text='Ответы')
+    back_to_tasks = KeyboardButton(text='Назад к ТЗ')
 
 
 class ConstructorButtons():
