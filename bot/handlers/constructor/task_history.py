@@ -74,7 +74,7 @@ async def send_corusel(msg: Message, state: FSMContext):
         start_text += '✅Вы ответили на ТЗ\n\n'
         markup = kb.constructor.opened_tasks_corusel_with_show_answer
         
-    await state.update_data(index=0, task_id=task.id)
+    await state.update_data(task_index=task_index, task_id=task.id)
     await state.set_state(ConstructorStates.tasks_history)
     await send_tech_task(
         user_id,

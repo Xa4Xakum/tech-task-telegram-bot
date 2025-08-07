@@ -21,9 +21,13 @@ r.message.filter(
 )
 
 
-@r.message(F.text == kb.btn.constructor.answer_reply.text, StateFilter('*'))
-async def answer_reply(msg: Message):
-    await msg.answer('В разработке...')
+@r.message(
+    F.text == kb.btn.constructor.answer_reply.text,
+    StateFilter(ConstructorStates.tasks_history)
+)
+async def answer_reply(msg: Message, state: FSMContext):
+    await msg.answer(f'Отправьте примерную стоимость выполнения ТЗ')
+    await state.set_state(ConstructorStates.get_price)
 
 
 @r.callback_query(F.data.startswith('answer'))
@@ -48,7 +52,10 @@ async def get_price(msg: Message, state: FSMContext):
         await msg.answer(f'{price} не является числом, попробуйте еще раз.')
         return
 
-    await msg.answer(f'Оцените срок выполнения. Отправьте дату окончания выполнения в формате ДД.ММ.ГГГГ ЧЧ:ММ')
+    await msg.answer(
+        f'Оцените срок выполнения. Отправьте дату окончания выполнения в формате ДД.ММ.ГГГГ ЧЧ:ММ'
+        f'Пример правильной даты: {datetime.now().strftime("%d.%m.%Y %H:%M")}'
+    )
     await state.update_data(price=price)
     await state.set_state(ConstructorStates.get_deadline)
 
