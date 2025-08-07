@@ -2,9 +2,11 @@ from aiogram.fsm.state import StatesGroup, State
 
 
 class ManagerStates(StatesGroup):
-    waiting_for_text = State()
-    waiting_for_media = State()
-    waiting_for_deadline = State()
+    get_task_text = State()
+    get_media = State()
+    get_deadline = State()
+    get_recievers = State()
+
     tasks_history = State()
     task_answers = State()
     confirm = State()
