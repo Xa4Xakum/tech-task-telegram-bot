@@ -63,10 +63,11 @@ async def send_task_answer(
 ):
     answer = db.answer.get_by_ids(task_id, user_id)
     user = db.user.get_by_id(user_id)
+    task = db.tech_task.get_by_id(task_id)
     text = Text(
         start_text,
-        Bold(f"Ответ от {user.id}(@{user.username}) на ТЗ #{task_id}\n"),
-        f'До {answer.deadline.strftime("%d.%m.%Y %H:%M")} за {answer.price}\n\n',
+        Bold(f"Ответ от {user.id}(@{user.username}) на ТЗ #{task_id} от {task.create_at.strftime("%d.%m.%Y %H:%M")}\n"),
+        f'Сможет выполнить до {answer.deadline.strftime("%d.%m.%Y %H:%M")} за {answer.price}\n\n',
         answer.text
     )
     await bot.send_message(
@@ -89,7 +90,8 @@ async def send_tech_task(
 
     text = Text(
         start_text,
-        Bold(f'ТЗ #{task.id}, нужен ответ до {task.deadline.strftime("%d.%m.%Y %H:%M")}\n\n'),
+        Bold(f'ТЗ #{task.id} от {task.create_at.strftime("%d.%m.%Y %H:%M")}\n'),
+        Bold(f'Нужен ответ до {task.deadline.strftime("%d.%m.%Y %H:%M")}\n\n'),
         task.text
     )
 

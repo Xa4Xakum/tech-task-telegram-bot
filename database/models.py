@@ -33,6 +33,7 @@ class TechTask(Base):
     owner_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     deadline: Mapped[datetime] = mapped_column(DateTime)
     status: Mapped[str] = mapped_column(String)
+    create_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     update_at: Mapped[datetime] = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now)
 
     media: Mapped[List['Media']] = relationship(
@@ -49,5 +50,5 @@ class Answer(Base):
     task_id: Mapped[int] = mapped_column(Integer, ForeignKey('tech_tasks.id', ondelete='CASCADE'), primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
     text: Mapped[str] = mapped_column(String)
-    price: Mapped[int] = mapped_column(Integer)
+    price: Mapped[str] = mapped_column(String)  # Попросили в цену добавлять еще и буквы, штош, пусть так
     deadline: Mapped[datetime] = mapped_column(DateTime)
