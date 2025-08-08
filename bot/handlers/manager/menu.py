@@ -9,7 +9,7 @@ from config.init import conf
 
 from ...keyboards import kb
 from ...filters import ChatType, Role
-from ...states import ManagerStates
+from ...states import CreateTaskStates
 
 r = Router()
 r.message.filter(
@@ -18,7 +18,7 @@ r.message.filter(
 )
 
 
-@r.message(F.text==kb.btn.cancel.text, StateFilter(ManagerStates))
+@r.message(F.text==kb.btn.cancel.text, StateFilter(CreateTaskStates))
 @r.message(F.text==kb.btn.to_menu.text)
 @r.message(Command('start'))
 async def start(msg: Message, state: FSMContext):

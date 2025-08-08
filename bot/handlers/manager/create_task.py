@@ -12,7 +12,7 @@ from database.init import db
 
 from ...keyboards import kb
 from ...filters import ChatType, Role
-from ...states import ManagerStates
+from ...states import ManagerStates, CreateTaskStates
 from ...misc import send_tech_task, parse_datetime, correct_date_example
 from ...init import q
 
@@ -26,11 +26,11 @@ r.message.filter(
 @r.message(F.text == kb.btn.manager.create_task.text)
 async def start_create_task(msg: Message, state: FSMContext):
     await msg.answer("📝 Введите текст задания:", reply_markup=kb.cancel)
-    await state.set_state(ManagerStates.get_task_text)
+    await state.set_state(CreateTaskStates.get_task_text)
 
 
 # 🧾 Получение текста
-@r.message(ManagerStates.get_task_text)
+@r.message(CreateTaskStates.get_task_text)
 async def get_task_text(msg: Message, state: FSMContext):
     await state.update_data(text=msg.text, media=[])
     await msg.answer(
@@ -38,11 +38,11 @@ async def get_task_text(msg: Message, state: FSMContext):
         'ВАЖНО! Не отправляйте одно и то же вложение дважды - сохранится только одна копия',
         reply_markup=kb.ready
     )
-    await state.set_state(ManagerStates.get_media)
+    await state.set_state(CreateTaskStates.get_media)
 
 
 # 🖼️ Получение медиа
-@r.message(F.content_type.in_(["photo", "video", "voice", "document"]), ManagerStates.get_media)
+@r.message(F.content_type.in_(["photo", "video", "voice", "document"]), CreateTaskStates.get_media)
 async def get_media(msg: Message, state: FSMContext):
     data = await state.get_data()
     media = data.get("media", [])
@@ -53,7 +53,7 @@ async def get_media(msg: Message, state: FSMContext):
 # ✅ пропуск медиа
 @r.message(
     F.text == kb.btn.skip.text,
-    ManagerStates.get_media
+    CreateTaskStates.get_media
 )
 async def skip_media(msg: Message, state: FSMContext):
     await msg.answer(
@@ -61,13 +61,13 @@ async def skip_media(msg: Message, state: FSMContext):
         f'Пример правильной даты: <code>{correct_date_example()}</code>',
         parse_mode='html'
     )
-    await state.set_state(ManagerStates.get_deadline)
+    await state.set_state(CreateTaskStates.get_deadline)
 
 
 # ✅ Завершение медиа
 @r.message(
     F.text == kb.btn.ready.text,
-    ManagerStates.get_media
+    CreateTaskStates.get_media
 )
 async def done_media(msg: Message, state: FSMContext):
     data = await state.get_data()
@@ -82,7 +82,7 @@ async def done_media(msg: Message, state: FSMContext):
 
 
 # 🕒 Дедлайн
-@r.message(ManagerStates.get_deadline)
+@r.message(CreateTaskStates.get_deadline)
 async def get_deadline(msg: Message, state: FSMContext):
     date = parse_datetime(msg.text, "%d.%m.%Y %H:%M")
     if not date:
@@ -103,7 +103,7 @@ async def get_deadline(msg: Message, state: FSMContext):
         text += f'- {user.id:<11} - @{user.username}\n'
         
     await msg.answer(text, reply_markup=kb.reply_markup_from_buttons(*btns, adjust=[2]))
-    await state.set_state(ManagerStates.get_recievers)
+    await state.set_state(CreateTaskStates.get_recievers)
 
 
 @r.message(
@@ -111,7 +111,7 @@ async def get_deadline(msg: Message, state: FSMContext):
         kb.btn.skip.text,
         kb.btn.ready.text
     ]),
-    ManagerStates.get_recievers
+    CreateTaskStates.get_recievers
 )
 async def get_recievers(msg: Message, state: FSMContext):
     user_id = try_to_int(msg.text)
@@ -133,7 +133,7 @@ async def get_recievers(msg: Message, state: FSMContext):
     await state.update_data(user_ids=user_ids)
 
 
-@r.message(F.text == kb.btn.ready.text, ManagerStates.get_recievers)
+@r.message(F.text == kb.btn.ready.text, CreateTaskStates.get_recievers)
 async def ready_get_recievers(msg: Message, state: FSMContext):
     data = await state.get_data()
     users = data.get('user_ids', [])
@@ -145,7 +145,7 @@ async def ready_get_recievers(msg: Message, state: FSMContext):
     await check(msg, state)
 
 
-@r.message(F.text == kb.btn.skip.text, ManagerStates.get_recievers)
+@r.message(F.text == kb.btn.skip.text, CreateTaskStates.get_recievers)
 async def check(msg: Message, state: FSMContext):
 
     data = await state.get_data()
@@ -168,11 +168,11 @@ async def check(msg: Message, state: FSMContext):
         parse_mode="HTML",
         reply_markup=kb.check
     )
-    await state.set_state(ManagerStates.confirm)
+    await state.set_state(CreateTaskStates.confirm)
 
 
 # ☑️ Подтверждение
-@r.message(F.text == kb.btn.all_good.text, ManagerStates.confirm)
+@r.message(F.text == kb.btn.all_good.text, CreateTaskStates.confirm)
 async def confirm_task(msg: Message, state: FSMContext):
     data = await state.get_data()
     text = data["text"]
