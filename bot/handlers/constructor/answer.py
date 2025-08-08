@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
@@ -12,7 +10,7 @@ from database.init import db
 from ...keyboards import kb
 from ...filters import ChatType, Role
 from ...states import ConstructorStates
-from ...misc import parse_datetime, send_task_answer
+from ...misc import parse_datetime, send_task_answer, correct_date_example
 
 r = Router()
 r.message.filter(
@@ -70,7 +68,7 @@ async def get_price(msg: Message, state: FSMContext):
 
     await msg.answer(
         f'Оцените срок выполнения. Отправьте дату окончания выполнения в формате ДД.ММ.ГГГГ ЧЧ:ММ'
-        f'Пример правильной даты: {datetime.now().strftime("%d.%m.%Y %H:%M")}'
+        f'Пример правильной даты: <code>{correct_date_example()}</code>'
     )
     await state.update_data(price=price)
     await state.set_state(ConstructorStates.get_deadline)
@@ -82,7 +80,7 @@ async def get_deadline(msg: Message, state: FSMContext):
     if not date:
         await msg.answer(
             f'Не удалось спарсить дату из {msg.text}, попробуйте еще раз. '
-            f'Пример правильной даты: <code>{datetime.now().strftime("%d.%m.%Y %H:%M")}</code>',
+            f'Пример правильной даты: <code>{correct_date_example()}</code>',
             parse_mode='html'
         )
         return

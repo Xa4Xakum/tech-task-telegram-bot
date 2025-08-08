@@ -1,5 +1,4 @@
 import asyncio
-from datetime import datetime
 
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery, FSInputFile
@@ -15,7 +14,7 @@ from database.init import db
 from ...keyboards import kb
 from ...filters import ChatType, Role
 from ...states import ManagerStates
-from ...misc import send_tech_task, parse_datetime
+from ...misc import send_tech_task, parse_datetime, correct_date_example
 from ...init import q
 
 r = Router()
@@ -60,7 +59,7 @@ async def get_media(msg: Message, state: FSMContext):
 async def skip_media(msg: Message, state: FSMContext):
     await msg.answer(
         "🕒 Укажи дедлайн в формате `ДД.ММ.ГГГГ ЧЧ:ММ`\n"
-        f'Пример правильной даты: {datetime.now().strftime("%d.%m.%Y %H:%M")}'
+        f'Пример правильной даты: <code>{correct_date_example()}</code>'
     )
     await state.set_state(ManagerStates.get_deadline)
 
@@ -89,7 +88,7 @@ async def get_deadline(msg: Message, state: FSMContext):
     if not date:
         await msg.answer(
             f'Не удалось спарсить дату из {msg.text}, попробуйте еще раз. '
-            f'Пример правильной даты: <code>{datetime.now().strftime("%d.%m.%Y %H:%M")}</code>',
+            f'Пример правильной даты: <code>{correct_date_example()}</code>',
             parse_mode='html'
         )
         return
