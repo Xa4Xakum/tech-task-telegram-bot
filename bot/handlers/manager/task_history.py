@@ -73,14 +73,19 @@ async def send_corusel(msg: Message, state: FSMContext):
     user_id = msg.from_user.id
     answers = db.answer.get_by_task(task_id=task.id)
     avarage = 0
+    answers_text = "Оценки:\n"
     for i in answers:
-        avarage += i.price
+        user = db.user.get_by_id(i.user_id)
+        username = user.username if user else None
+        if not username: username = i.user_id
+
+        answers_text += f'<i>{username:<11} - до {i.deadline.strftime(conf.datetime_format)} за {i.price}</i>\n'
     if avarage != 0: avarage = round(avarage / len(answers), 2)
 
     start_text = (
         f'{task_index + 1}/{len(tasks)}\n'
         f'Кол-во ответов: {len(answers)}\n'
-        f'Средняя цена: {avarage}\n\n'
+        f'{answers_text}\n'
     )
 
     if len(answers) > 0: markup = kb.manager.opened_tasks_corusel_with_show_answers
