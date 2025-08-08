@@ -89,7 +89,8 @@ async def get_deadline(msg: Message, state: FSMContext):
     if not date:
         await msg.answer(
             f'Не удалось спарсить дату из {msg.text}, попробуйте еще раз. '
-            f'Пример правильной даты: {datetime.now().strftime("%d.%m.%Y %H:%M")}'
+            f'Пример правильной даты: <code>{datetime.now().strftime("%d.%m.%Y %H:%M")}</code>',
+            parse_mode='html'
         )
         return
 
