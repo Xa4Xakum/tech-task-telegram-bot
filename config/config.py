@@ -62,4 +62,4 @@ class Config():
     @property
     def db_conneciton(self) -> str:
         '''Подключение к бд'''
-        return 'sqlite:///database/Xakum.db'
+        return 'sqlite:///config/Xakum.db'
