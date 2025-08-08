@@ -47,6 +47,41 @@ class Get(BaseCrud):
             ).first()
 
 
+class Update(BaseCrud):
+    '''Методы изменения технических заданий'''
+
+    def update_deadline(self, task_id: int, user_id: int, deadline: datetime) -> None:
+        with self.session() as s:
+            s.query(Answer).filter(
+                Answer.task_id == task_id,
+                Answer.user_id == user_id,
+            ).update({
+                Answer.deadline: deadline,
+            })
+            s.commit()
+
+    def update_price(self, task_id: int, user_id: int, price: str) -> None:
+        with self.session() as s:
+            s.query(Answer).filter(
+                Answer.task_id == task_id,
+                Answer.user_id == user_id,
+            ).update({
+                Answer.price: price,
+            })
+            s.commit()
+
+    def update_comment(self, task_id: int, user_id: int, comment: str) -> None:
+        with self.session() as s:
+            s.query(Answer).filter(
+                Answer.task_id == task_id,
+                Answer.user_id == user_id,
+            ).update({
+                Answer.text: comment,
+            })
+            s.commit()
+
+
+
 class Del(BaseCrud):
     '''Методы удаления ответов'''
 
@@ -59,5 +94,5 @@ class Del(BaseCrud):
             s.commit()
 
 
-class CRUD(Add, Get, Del):
+class CRUD(Add, Get, Update, Del):
     '''CRUD для ответов на ТЗ'''

@@ -26,15 +26,6 @@ r.message.filter(
 
 
 @r.message(
-    F.text == kb.btn.manager.back_to_tasks.text,
-    StateFilter(ManagerStates.task_answers)
-)
-@r.message(F.text == kb.btn.manager.tasks_history.text)
-async def task_history(msg: Message, state: FSMContext):
-    await send_corusel(msg, state)
-
-
-@r.message(
     F.text == kb.btn.next.text,
     StateFilter(ManagerStates.tasks_history)
 )
@@ -56,6 +47,11 @@ async def previous(msg: Message, state: FSMContext):
     await send_corusel(msg, state)
 
 
+@r.message(
+    F.text == kb.btn.manager.back_to_tasks.text,
+    StateFilter(ManagerStates.task_answers)
+)
+@r.message(F.text == kb.btn.manager.tasks_history.text)
 async def send_corusel(msg: Message, state: FSMContext):
     tasks = db.tech_task.get_all()
 

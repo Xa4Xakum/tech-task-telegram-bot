@@ -20,11 +20,12 @@ async def on_startup():
 
 
 def include_constructor_routers():
-    from bot.handlers.constructor import menu, answer, task_history
+    from bot.handlers.constructor import menu, answer, task_history, edit_answer
     dp.include_routers(
         menu.r,
         answer.r,
-        task_history.r
+        task_history.r,
+        edit_answer.r
     )
 
 

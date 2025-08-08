@@ -22,11 +22,6 @@ r.message.filter(
 )
 
 
-@r.message(F.text == kb.btn.constructor.tasks_history.text)
-async def task_history(msg: Message, state: FSMContext):
-    await send_corusel(msg, state)
-
-
 @r.message(
     F.text == kb.btn.next.text,
     StateFilter(ConstructorStates.tasks_history)
@@ -49,6 +44,12 @@ async def previous(msg: Message, state: FSMContext):
     await send_corusel(msg, state)
 
 
+@r.message(
+    F.text.in_([
+        kb.btn.constructor.tasks_history.text,
+        kb.btn.constructor.to_history.text
+    ])
+)
 async def send_corusel(msg: Message, state: FSMContext):
     tasks = db.tech_task.get_all()
 
@@ -98,4 +99,9 @@ async def show_answer(msg: Message, state: FSMContext):
         await msg.answer('Кажется кто-то только что удалил ТЗ.. Если проблема повторится - напишите менеджеру')
         return
 
-    await send_task_answer(msg.from_user.id, task.id, msg.from_user.id)
+    await send_task_answer(
+        msg.from_user.id,
+        task.id,
+        msg.from_user.id,
+        reply_markup=kb.constructor.corusel_with_edit
+    )

@@ -20,7 +20,14 @@ class ConstructorButtons():
     answer = InlineKeyboardButton(text='Ответить', callback_data='answer')
     answer_reply = KeyboardButton(text='Ответить')
     show_answer = KeyboardButton(text='Мой ответ')
+    edit = KeyboardButton(text='Изменить')
+    continue_edit = KeyboardButton(text='Продолжить изменение')
     without_com = KeyboardButton(text='Без комментария')
+
+    deadline = KeyboardButton(text='Дедлайн')
+    price = KeyboardButton(text='Цену')
+    comment = KeyboardButton(text='Комментарий')
+    to_history = KeyboardButton(text='К истории ТЗ')
 
 
 class Buttons():

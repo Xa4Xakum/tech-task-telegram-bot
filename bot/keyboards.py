@@ -98,6 +98,33 @@ class ConstructorKeyboards(BaseKeyboard):
         )
 
     @property
+    def corusel_with_edit(self):
+        return self.reply_markup_from_buttons(
+            self.btn.previous,
+            self.btn.constructor.edit,
+            self.btn.next,
+            self.btn.to_menu,
+            adjust=[3,1]
+        )
+
+    @property
+    def edit_answer(self):
+        return self.reply_markup_from_buttons(
+            self.btn.constructor.deadline,
+            self.btn.constructor.price,
+            self.btn.constructor.comment,
+            self.btn.constructor.to_history,
+            adjust=[3,1]
+        )
+
+    @property
+    def after_edit_answer(self):
+        return self.reply_markup_from_buttons(
+            self.btn.constructor.continue_edit,
+            self.btn.constructor.to_history,
+        )
+
+    @property
     def without_com(self):
         return self.reply_markup_from_buttons(
             self.btn.constructor.without_com,

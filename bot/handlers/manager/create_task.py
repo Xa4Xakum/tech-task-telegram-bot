@@ -58,7 +58,8 @@ async def get_media(msg: Message, state: FSMContext):
 async def skip_media(msg: Message, state: FSMContext):
     await msg.answer(
         "🕒 Укажи дедлайн в формате `ДД.ММ.ГГГГ ЧЧ:ММ`\n"
-        f'Пример правильной даты: <code>{correct_date_example()}</code>'
+        f'Пример правильной даты: <code>{correct_date_example()}</code>',
+        parse_mode='html'
     )
     await state.set_state(ManagerStates.get_deadline)
 

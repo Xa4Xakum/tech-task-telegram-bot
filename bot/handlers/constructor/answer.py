@@ -62,7 +62,8 @@ async def answer_callback(call: CallbackQuery, state: FSMContext):
 async def get_price(msg: Message, state: FSMContext):
     await msg.answer(
         f'Оцените срок выполнения. Отправьте дату окончания выполнения в формате ДД.ММ.ГГГГ ЧЧ:ММ'
-        f'Пример правильной даты: <code>{correct_date_example()}</code>'
+        f'Пример правильной даты: <code>{correct_date_example()}</code>',
+        parse_mode='html'
     )
     await state.update_data(price=msg.text)
     await state.set_state(ConstructorStates.get_deadline)

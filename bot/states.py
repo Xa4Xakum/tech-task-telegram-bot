@@ -17,3 +17,10 @@ class ConstructorStates(StatesGroup):
     get_price = State()
     get_deadline = State()
     get_com = State()
+
+
+class EditAnswerStates(StatesGroup):
+    get_subject = State()
+    get_deadline = State()
+    get_price = State()
+    get_comment = State()
