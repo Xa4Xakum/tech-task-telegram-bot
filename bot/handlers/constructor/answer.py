@@ -4,7 +4,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
 
 from config.init import conf
-from utils.misc import try_to_int
 from database.init import db
 
 from ...keyboards import kb
@@ -71,7 +70,7 @@ async def get_price(msg: Message, state: FSMContext):
 
 @r.message(StateFilter(ConstructorStates.get_deadline))
 async def get_deadline(msg: Message, state: FSMContext):
-    date = parse_datetime(msg.text, "%d.%m.%Y %H:%M")
+    date = parse_datetime(msg.text, conf.datetime_format)
     if not date:
         await msg.answer(
             f'Не удалось спарсить дату из {msg.text}, попробуйте еще раз. '

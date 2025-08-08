@@ -1,9 +1,8 @@
 import asyncio
 
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery, FSInputFile
+from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import Command, StateFilter
 from aiogram.types import KeyboardButton
 from loguru import logger
 

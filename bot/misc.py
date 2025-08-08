@@ -10,7 +10,7 @@ from aiogram.types import (
     Message
 )
 from aiogram.utils.formatting import (
-    Bold, as_list, as_marked_section, as_key_value, HashTag, Text, Italic
+    Bold, Text
 )
 from loguru import logger
 
@@ -23,7 +23,7 @@ from .init import bot
 
 
 def correct_date_example():
-    return (datetime.now() + timedelta(hours=4)).strftime("%d.%m.%Y %H:%M")
+    return (datetime.now() + timedelta(hours=4)).strftime(conf.datetime_format)
 
 
 @try_do(1, 'warning')

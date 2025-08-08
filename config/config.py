@@ -43,7 +43,7 @@ class Config():
 
     @property
     def bot_token(self) -> str:
-        '''Токен бота группы'''
+        '''Токен бота'''
         return self._get_from_env('BOT_TOKEN')
 
     @property
@@ -54,6 +54,10 @@ class Config():
         if len(alist) == 0:
             raise ValueError('Список адмнистраторов ADMINS пуст!')
         return alist
+
+    @property
+    def datetime_format(self) -> str:
+        return "%d.%m.%Y %H:%M"
 
     @property
     def db_conneciton(self) -> str:
