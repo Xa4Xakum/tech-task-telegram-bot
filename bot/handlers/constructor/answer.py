@@ -61,16 +61,11 @@ async def answer_callback(call: CallbackQuery, state: FSMContext):
 
 @r.message(StateFilter(ConstructorStates.get_price))
 async def get_price(msg: Message, state: FSMContext):
-    price = try_to_int(msg.text)
-    if not isinstance(price, int):
-        await msg.answer(f'{price} не является числом, попробуйте еще раз.')
-        return
-
     await msg.answer(
         f'Оцените срок выполнения. Отправьте дату окончания выполнения в формате ДД.ММ.ГГГГ ЧЧ:ММ'
         f'Пример правильной даты: <code>{correct_date_example()}</code>'
     )
-    await state.update_data(price=price)
+    await state.update_data(price=msg.text)
     await state.set_state(ConstructorStates.get_deadline)
 
 

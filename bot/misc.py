@@ -22,6 +22,10 @@ from .keyboards import kb
 from .init import bot
 
 
+def correct_date_example():
+    return (datetime.now() + timedelta(hours=4)).strftime("%d.%m.%Y %H:%M")
+
+
 @try_do(1, 'warning')
 async def deadline_notify():
     logger.info('Запущена задача на уведомление о просрочке ответа')
