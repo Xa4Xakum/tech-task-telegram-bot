@@ -47,7 +47,7 @@ async def previous(msg: Message, state: FSMContext):
 @r.message(
     F.text.in_([
         kb.btn.constructor.tasks_history.text,
-        kb.btn.constructor.to_history.text
+        kb.btn.to_history.text
     ])
 )
 async def send_corusel(msg: Message, state: FSMContext):

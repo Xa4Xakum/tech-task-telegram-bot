@@ -46,7 +46,7 @@ async def get_task_text(msg: Message, state: FSMContext):
 async def get_media(msg: Message, state: FSMContext):
     data = await state.get_data()
     media = data.get("media", [])
-    media.append(msg)  # сохраняем весь объект Message, ты потом сам вытащишь file_id и тип
+    media.append(msg)
     await state.update_data(media=media)
 
 

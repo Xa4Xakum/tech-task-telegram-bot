@@ -22,7 +22,7 @@ r.message.filter(
 
 
 @r.message(
-    F.text == kb.btn.constructor.continue_edit.text,
+    F.text == kb.btn.continue_edit.text,
     StateFilter(EditAnswerStates)
 )
 @r.message(
@@ -64,7 +64,7 @@ async def get_deadline(msg: Message, state: FSMContext):
     data = await state.get_data()
     task_id = data.get('task_id')
     db.answer.update_deadline(task_id, msg.from_user.id, date)
-    await msg.answer('Обновлено!', reply_markup=kb.constructor.after_edit_answer)
+    await msg.answer('Обновлено!', reply_markup=kb.after_edit)
 
 
 @r.message(
@@ -88,7 +88,7 @@ async def get_price(msg: Message, state: FSMContext):
     data = await state.get_data()
     task_id = data.get('task_id')
     db.answer.update_price(task_id, msg.from_user.id, msg.text)
-    await msg.answer('Обновлено!', reply_markup=kb.constructor.after_edit_answer)
+    await msg.answer('Обновлено!', reply_markup=kb.after_edit)
 
 
 @r.message(
@@ -112,5 +112,5 @@ async def get_comment(msg: Message, state: FSMContext):
     data = await state.get_data()
     task_id = data.get('task_id')
     db.answer.update_comment(task_id, msg.from_user.id, msg.text)
-    await msg.answer('Обновлено!', reply_markup=kb.constructor.after_edit_answer)
+    await msg.answer('Обновлено!', reply_markup=kb.after_edit)
 

@@ -108,6 +108,23 @@ class Update(BaseCrud):
             })
             s.commit()
 
+    def update_deadline(self, task_id: int, deadline: datetime) -> None:
+        with self.session() as s:
+            s.query(TechTask).filter(
+                TechTask.id == task_id,
+            ).update({
+                TechTask.deadline: deadline,
+            })
+            s.commit()
+
+    def update_text(self, task_id: int, text: str) -> None:
+        with self.session() as s:
+            s.query(TechTask).filter(
+                TechTask.id == task_id,
+            ).update({
+                TechTask.text: text,
+            })
+            s.commit()
 
 class Del(BaseCrud):
     '''Методы удаления технических заданий'''

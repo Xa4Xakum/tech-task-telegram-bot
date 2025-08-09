@@ -15,7 +15,7 @@ from database.init import db
 
 from ...keyboards import kb
 from ...filters import ChatType, Role
-from ...states import ManagerStates
+from ...states import ManagerStates, EditAnswerStates
 from ...misc import send_tech_task, parse_datetime
 from ...init import q
 
@@ -65,8 +65,7 @@ async def previous(msg: Message, state: FSMContext):
 
 
 @r.message(
-    F.text == kb.btn.manager.back_to_tasks.text,
-    StateFilter(ManagerStates.task_answers)
+    F.text == kb.btn.to_history.text
 )
 async def send_corusel(msg: Message, state: FSMContext):
     data = await state.get_data()
@@ -101,8 +100,12 @@ async def send_corusel(msg: Message, state: FSMContext):
         f'Оценки:\n'
     )
 
-    if len(answers) > 0: markup = kb.manager.opened_tasks_corusel_with_show_answers
-    else: markup = kb.corusel
+    if len(answers) > 0:
+        if task.owner_id == msg.from_user.id: markup = kb.manager.corusel_with_show_answers_and_edit
+        else: markup = kb.manager.corusel_with_show_answers
+    else: 
+        if task.owner_id == msg.from_user.id: markup = kb.manager.corusel_with_edit
+        else: markup = kb.corusel
         
     await state.update_data(task_index=task_index, task_id=task.id)
     await state.set_state(ManagerStates.tasks_history)
