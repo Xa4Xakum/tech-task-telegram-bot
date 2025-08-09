@@ -44,6 +44,12 @@ async def previous(msg: Message, state: FSMContext):
     await send_corusel(msg, state)
 
 
+@r.message(F.text == kb.btn.manager.opened_tasks.text)
+async def opened_tasks(msg: Message, state: FSMContext):
+    await state.update_data(category='opened')
+    await send_corusel(msg, state)
+
+
 @r.message(
     F.text.in_([
         kb.btn.constructor.tasks_history.text,
@@ -51,10 +57,13 @@ async def previous(msg: Message, state: FSMContext):
     ])
 )
 async def send_corusel(msg: Message, state: FSMContext):
-    tasks = db.tech_task.get_all()
+    data = await state.get_data()
+    category = data.get('category')
+    if category == 'opened': tasks = db.tech_task.get_opened()
+    else: tasks = db.tech_task.get_all()
 
     if len(tasks) == 0:
-        await msg.answer('На моей памяти не было ни одного ТЗ...')
+        await msg.answer('Не могу найти ни одного ТЗ...')
         return
 
     data = await state.get_data()

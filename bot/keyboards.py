@@ -43,7 +43,6 @@ class ManagerKeyboards(BaseKeyboard):
     def menu(self):
         return self.reply_markup_from_buttons(
             self.btn.manager.create_task,
-            self.btn.manager.opened_tasks,
             self.btn.manager.tasks_history,
         )
 
@@ -51,9 +50,10 @@ class ManagerKeyboards(BaseKeyboard):
     def choose_tasks_owner(self):
         return self.reply_markup_from_buttons(
             self.btn.manager.my_tasks,
-            self.btn.manager.other_tasks,
+            self.btn.manager.all_tasks,
+            self.btn.manager.opened_tasks,
             self.btn.to_menu,
-            adjust=[2,1]
+            adjust=[3,1]
         )
 
     @property

@@ -36,7 +36,7 @@ async def tasks_history(msg: Message, state: FSMContext):
 async def get_tasks_owner(msg: Message, state: FSMContext):
     if msg.text == kb.btn.manager.my_tasks.text:
         await state.update_data(category='my')
-    elif msg.text != kb.btn.manager.other_tasks.text:
+    elif msg.text != kb.btn.manager.all_tasks.text:
         await msg.answer(f'Варианта {msg.text} не предусмотрено, выберите из предложенных.')
         return
     await send_corusel(msg, state)
@@ -79,10 +79,10 @@ async def send_corusel(msg: Message, state: FSMContext):
     category = data.get('category')
     if category == 'my': tasks = db.tech_task.get_my(msg.from_user.id)
     elif category == 'opened': tasks = db.tech_task.get_opened()
-    else: tasks = db.tech_task.get_not_my(msg.from_user.id)
+    else: tasks = db.tech_task.get_all()
 
     if len(tasks) == 0:
-        await msg.answer('На моей памяти не было ни одного ТЗ...')
+        await msg.answer('Не могу найти ни одного ТЗ...')
         return
 
     if task_index >= len(tasks): task_index = 0

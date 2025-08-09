@@ -11,7 +11,7 @@ class ManagerButtons():
     show_answers = KeyboardButton(text='Ответы')
     back_to_tasks = KeyboardButton(text='Назад к ТЗ')
     my_tasks = KeyboardButton(text='Мои ТЗ')
-    other_tasks = KeyboardButton(text='Другие ТЗ')
+    all_tasks = KeyboardButton(text='Все ТЗ')
     text = KeyboardButton(text="Текст ТЗ")
     attachments = KeyboardButton(text='Вложения')
     del_attachments = KeyboardButton(text='Удалить текущие')
