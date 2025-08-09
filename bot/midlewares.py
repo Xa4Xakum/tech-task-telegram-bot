@@ -1,11 +1,8 @@
-from datetime import datetime
 from typing import Callable, Dict, Any, Awaitable
 from time import perf_counter
 
 from aiogram import BaseMiddleware
-from aiogram.types import TelegramObject, Message
-from aiogram.fsm.context import FSMContext
-from aiogram.dispatcher.flags import get_flag
+from aiogram.types import TelegramObject
 from loguru import logger
 
 from database.init import db
@@ -62,11 +59,12 @@ class CatchError(BaseMiddleware):
         event: TelegramObject,
         data: Dict[str, Any]
     ) -> Any:
-        
+
         try:
             return await handler(event, data)
         except Exception as e:
             logger.error(repr(e))
             logger.opt(exception=True).log("ERROR", f"event:\n{event}\n\ndata:\n{data}")
+
             if event.message: await event.message.answer(f'Упс... Кажется случилась непредвиденная ошибка.. сообщите об этом менеджеру')
             if event.callback_query: await event.callback_query.answer(f'Упс... Кажется случилась непредвиденная ошибка.. сообщите об этом менеджеру')

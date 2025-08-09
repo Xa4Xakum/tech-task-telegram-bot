@@ -35,10 +35,16 @@ async def tasks_history(msg: Message, state: FSMContext):
 @r.message(ManagerStates.get_tasks_owner)
 async def get_tasks_owner(msg: Message, state: FSMContext):
     if msg.text == kb.btn.manager.my_tasks.text:
-        await state.update_data(owner='my')
+        await state.update_data(category='my')
     elif msg.text != kb.btn.manager.other_tasks.text:
         await msg.answer(f'Варианта {msg.text} не предусмотрено, выберите из предложенных.')
         return
+    await send_corusel(msg, state)
+
+
+@r.message(F.text == kb.btn.manager.opened_tasks.text)
+async def opened_tasks(msg: Message, state: FSMContext):
+    await state.update_data(category='opened')
     await send_corusel(msg, state)
 
 
@@ -70,8 +76,9 @@ async def previous(msg: Message, state: FSMContext):
 async def send_corusel(msg: Message, state: FSMContext):
     data = await state.get_data()
     task_index: int = data.get('task_index', 0)
-    owner = data.get('owner')
-    if owner == 'my': tasks = db.tech_task.get_my(msg.from_user.id)
+    category = data.get('category')
+    if category == 'my': tasks = db.tech_task.get_my(msg.from_user.id)
+    elif category == 'opened': tasks = db.tech_task.get_opened()
     else: tasks = db.tech_task.get_not_my(msg.from_user.id)
 
     if len(tasks) == 0:

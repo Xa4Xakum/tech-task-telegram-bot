@@ -95,6 +95,14 @@ class Get(BaseCrud):
                 TechTask.deadline > datetime.now()
             ).all()
 
+    def get_opened(self) -> List[TechTask]:
+        with self.session() as s:
+            return s.query(
+                TechTask
+            ).filter(
+                TechTask.deadline > datetime.now()
+            ).all()
+    
 
 class Update(BaseCrud):
     '''Методы изменения технических заданий'''

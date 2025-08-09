@@ -24,8 +24,3 @@ r.message.filter(
 async def start(msg: Message, state: FSMContext):
     await state.clear()
     await msg.answer('Выберите действие:', reply_markup=kb.manager.menu)
-
-
-@r.message(F.text == kb.btn.manager.opened_tasks.text)
-async def opened_task(msg: Message):
-    await msg.answer('В разработке...')
