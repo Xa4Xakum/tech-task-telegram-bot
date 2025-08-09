@@ -16,7 +16,9 @@ r.message.filter(
     ChatType('private'),
     Role(conf.roles.constructor)
 )
-
+r.callback_query.filter(
+    Role(conf.roles.constructor)
+)
 
 @r.message(
     F.text == kb.btn.constructor.answer_reply.text,
@@ -75,12 +77,21 @@ async def get_question(msg: Message, state: FSMContext):
     data = await state.get_data()
     task_id = data.get('task_id')
     task = db.tech_task.get_by_id(task_id)
+
     if not task:
         await msg.answer(f'ТЗ #{task_id} не найдено, возможно оно было удалено')
         await state.clear()
         return
 
-    rmsg = await try_send_message(chat_id=task.owner_id, text=msg.text, reply_markup=kb.constructor.answer(msg.from_user.id))
+    rmsg = await try_send_message(
+        chat_id=task.owner_id,
+        text=(
+            f'Вопрос по ТЗ #{task.id} от {task.create_at.strftime(conf.datetime_format)}\n'
+            f'От @{msg.from_user.username}\n\n'
+            f'{msg.text}'
+        ),
+        reply_markup=kb.constructor.answer(f'{task_id}:{msg.from_user.id}')
+    )
     if not rmsg:
         await msg.answer('Не удалось отправить ваш вопрос... возможно менеджер был удален или запретил боту писать сообщения.')
         return

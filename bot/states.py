@@ -22,6 +22,7 @@ class ManagerStates(StatesGroup):
     get_tasks_owner = State()
     tasks_history = State()
     task_answers = State()
+    answer_question = State()
 
 
 # ----- Стейты конструктора -----

@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from aiogram.filters import BaseFilter
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
 from database.init import db
 from config.init import conf
@@ -27,8 +27,9 @@ class Role(BaseFilter):
     def __init__(self, *roles: str | None) -> None:
         self.roles = roles
 
-    async def __call__(self, msg: Message) -> bool:
-        user = db.user.get_by_id(msg.from_user.id)
+    async def __call__(self, event: Message | CallbackQuery) -> bool:
+        user_id = event.from_user.id
+        user = db.user.get_by_id(user_id)
         if not user: return False
         return user.role in self.roles
 

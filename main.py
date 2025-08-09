@@ -30,13 +30,14 @@ def include_constructor_routers():
 
 
 def include_manager_routers():
-    from bot.handlers.manager import menu, create_task, task_history, task_answers, edit_task
+    from bot.handlers.manager import menu, create_task, task_history, task_answers, edit_task, answer
     dp.include_routers(
         menu.r,
         create_task.r,
         task_history.r,
         task_answers.r,
-        edit_task.r
+        edit_task.r,
+        answer.r
     )
 
 
