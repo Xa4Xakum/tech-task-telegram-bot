@@ -28,6 +28,9 @@ class ConstructorButtons():
     without_com = KeyboardButton(text='Без комментария')
     comment = KeyboardButton(text='Комментарий')
 
+    give_assessment = KeyboardButton(text='Дать оценку')
+    ask_question = KeyboardButton(text='Задать вопрос')
+
 
 class Buttons():
     '''Все кнопки бота (включая общие)'''

@@ -32,9 +32,13 @@ class ConstructorStates(StatesGroup):
 
 
 class CreateAnswerStates(StatesGroup):
+    get_action = State()
+
     get_price = State()
     get_deadline = State()
     get_com = State()
+
+    get_question = State()
 
 
 class EditAnswerStates(StatesGroup):

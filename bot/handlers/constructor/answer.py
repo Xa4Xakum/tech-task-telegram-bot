@@ -9,7 +9,7 @@ from database.init import db
 from ...keyboards import kb
 from ...filters import ChatType, Role
 from ...states import ConstructorStates, CreateAnswerStates
-from ...misc import parse_datetime, send_task_answer, correct_date_example
+from ...misc import parse_datetime, send_task_answer, correct_date_example, try_send_message
 
 r = Router()
 r.message.filter(
@@ -35,8 +35,8 @@ async def answer_reply(msg: Message, state: FSMContext):
         await msg.answer('Вы уже ответили на это ТЗ')
         return
 
-    await msg.answer(f'Отправьте примерную стоимость выполнения ТЗ')
-    await state.set_state(CreateAnswerStates.get_price)
+    await msg.answer(f'Что вы хотите сделать?', reply_markup=kb.constructor.choose_action)
+    await state.set_state(CreateAnswerStates.get_action)
 
 
 @r.callback_query(F.data.startswith('answer'))
@@ -53,15 +53,57 @@ async def answer_callback(call: CallbackQuery, state: FSMContext):
         await call.answer('Вы уже ответили на это тз')
         return
 
-    await call.message.answer(f'Отправьте примерную стоимость выполнения ТЗ')
     await state.update_data(task_id=task_id)
+
+    await call.message.answer(f'Что вы хотите сделать?', reply_markup=kb.constructor.choose_action)
+    await state.set_state(CreateAnswerStates.get_action)
+
+
+@r.message(
+    F.text == kb.btn.constructor.ask_question.text,
+    CreateAnswerStates.get_action
+)
+async def ask_question(msg: Message, state: FSMContext):
+    await msg.answer('Какой вопрос хотите задать?')
+    await state.set_state(CreateAnswerStates.get_question)
+
+
+@r.message(
+    CreateAnswerStates.get_question
+)
+async def get_question(msg: Message, state: FSMContext):
+    data = await state.get_data()
+    task_id = data.get('task_id')
+    task = db.tech_task.get_by_id(task_id)
+    if not task:
+        await msg.answer(f'ТЗ #{task_id} не найдено, возможно оно было удалено')
+        await state.clear()
+        return
+
+    rmsg = await try_send_message(chat_id=task.owner_id, text=msg.text, reply_markup=kb.constructor.answer(msg.from_user.id))
+    if not rmsg:
+        await msg.answer('Не удалось отправить ваш вопрос... возможно менеджер был удален или запретил боту писать сообщения.')
+        return
+
+    await msg.answer(
+        'Ваш вопрос доставлен!',
+        reply_markup=kb.to_menu
+    )
+
+
+@r.message(
+    F.text == kb.btn.constructor.give_assessment.text,
+    CreateAnswerStates.get_action
+)
+async def give_assessment(msg: Message, state: FSMContext):
+    await msg.answer('Отправьте примерную стоимость выполнения ТЗ')
     await state.set_state(CreateAnswerStates.get_price)
 
 
 @r.message(StateFilter(CreateAnswerStates.get_price))
 async def get_price(msg: Message, state: FSMContext):
     await msg.answer(
-        f'Оцените срок выполнения. Отправьте дату окончания выполнения в формате ДД.ММ.ГГГГ ЧЧ:ММ'
+        f'Оцените срок выполнения. Отправьте дату окончания выполнения в формате ДД.ММ.ГГГГ ЧЧ:ММ\n'
         f'Пример правильной даты: <code>{correct_date_example()}</code>',
         parse_mode='html'
     )
@@ -92,10 +134,10 @@ async def get_deadline(msg: Message, state: FSMContext):
 async def get_com(msg: Message, state: FSMContext):
     com = msg.text
     data = await state.get_data()
-
-    task = db.tech_task.get_by_id(data['task_id'])
+    task_id = data.get('task_id')
+    task = db.tech_task.get_by_id(task_id)
     if not task:
-        await msg.answer(f'ТЗ #{task.id} не найдено, возможно оно было удалено')
+        await msg.answer(f'ТЗ #{task_id} не найдено, возможно оно было удалено')
         await state.clear()
         return
 

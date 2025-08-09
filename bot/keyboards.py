@@ -165,6 +165,14 @@ class ConstructorKeyboards(BaseKeyboard):
             self.btn.constructor.without_com,
         )
 
+    @property
+    def choose_action(self):
+        return self.reply_markup_from_buttons(
+            self.btn.constructor.give_assessment,
+            self.btn.constructor.ask_question,
+            adjust=[2]
+        )
+
     def answer(self, task_id: int):
         return self.inline_markup_from_buttons(
             InlineKeyboardButton(

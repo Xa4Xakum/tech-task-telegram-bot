@@ -27,6 +27,11 @@ def correct_date_example():
 
 
 @try_do(1, 'warning')
+async def try_send_message(*args, **kwargs):
+    return await bot.send_message(*args, **kwargs)
+
+
+@try_do(1, 'warning')
 async def deadline_notify():
     logger.info('Запущена задача на уведомление о просрочке ответа')
     tasks = db.tech_task.get_with_deadline_smaller_than(datetime.now() + timedelta(minutes=30))
@@ -71,8 +76,8 @@ async def send_task_answer(
     text = Text(
         start_text,
         Bold(f"ТЗ #{task_id}\n"),
-        Bold(f"Дата создания:"), f"{task.create_at.strftime("%d.%m.%Y %H:%M")}\n",
-        Bold(f"Ответ от:"), f"{user.id}(@{user.username})\n",
+        Bold(f"Дата создания: "), f"{task.create_at.strftime("%d.%m.%Y %H:%M")}\n",
+        Bold(f"Ответ от: "), f"{user.id}(@{user.username})\n",
         f'Сможет выполнить до {answer.deadline.strftime("%d.%m.%Y %H:%M")} за {answer.price}\n\n',
         answer.text
     )
