@@ -60,6 +60,10 @@ class Config():
         return "%d.%m.%Y %H:%M"
 
     @property
+    def task_date_identifire_format(self) -> str:
+        return "%Y%m%d%H%M"
+
+    @property
     def db_conneciton(self) -> str:
         '''Подключение к бд'''
         return 'sqlite:///config/Xakum.db'

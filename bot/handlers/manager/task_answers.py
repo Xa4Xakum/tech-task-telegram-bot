@@ -68,7 +68,7 @@ async def send_corusel(msg: Message, state: FSMContext):
     answers = db.answer.get_by_task(task_id)
 
     if len(answers) == 0:
-        await msg.answer(f'На моей памяти не было ни одного ответа на ТЗ #{task_id}...')
+        await msg.answer(f'На моей памяти не было ни одного ответа на это ТЗ...')
         return
 
     if answer_index >= len(answers): answer_index = 0

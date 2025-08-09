@@ -47,7 +47,7 @@ async def answer_callback(call: CallbackQuery, state: FSMContext):
     task = db.tech_task.get_by_id(task_id)
 
     if not task:
-        await call.message.answer(f'ТЗ #{task_id} не найдено, возможно оно было удалено')
+        await call.message.answer(f'ТЗ не найдено, возможно оно было удалено')
         return
 
     answer = db.answer.get_by_ids(task_id, call.from_user.id)
@@ -79,14 +79,14 @@ async def get_question(msg: Message, state: FSMContext):
     task = db.tech_task.get_by_id(task_id)
 
     if not task:
-        await msg.answer(f'ТЗ #{task_id} не найдено, возможно оно было удалено')
+        await msg.answer(f'ТЗ не найдено, возможно оно было удалено')
         await state.clear()
         return
 
     rmsg = await try_send_message(
         chat_id=task.owner_id,
         text=(
-            f'Вопрос по ТЗ #{task.id} от {task.create_at.strftime(conf.datetime_format)}\n'
+            f'Вопрос по ТЗ #{task.create_at.strftime(conf.task_date_identifire_format)}\n'
             f'От @{msg.from_user.username}\n\n'
             f'{msg.text}'
         ),
@@ -148,7 +148,7 @@ async def get_com(msg: Message, state: FSMContext):
     task_id = data.get('task_id')
     task = db.tech_task.get_by_id(task_id)
     if not task:
-        await msg.answer(f'ТЗ #{task_id} не найдено, возможно оно было удалено')
+        await msg.answer(f'ТЗ не найдено, возможно оно было удалено')
         await state.clear()
         return
 

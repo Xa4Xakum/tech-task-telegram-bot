@@ -75,8 +75,7 @@ async def send_task_answer(
     task = db.tech_task.get_by_id(task_id)
     text = Text(
         start_text,
-        Bold(f"ТЗ #{task_id}\n"),
-        Bold(f"Дата создания: "), f"{task.create_at.strftime("%d.%m.%Y %H:%M")}\n",
+        Bold(f"ТЗ #{task.create_at.strftime(conf.task_date_identifire_format)}\n"),
         Bold(f"Ответ от: "), f"{user.id}(@{user.username})\n",
         f'Сможет выполнить до {answer.deadline.strftime("%d.%m.%Y %H:%M")} за {answer.price}\n\n',
         answer.text
@@ -101,7 +100,7 @@ async def send_tech_task(
 
     text = Text(
         start_text,
-        Bold(f'ТЗ #{task.id} от {task.create_at.strftime("%d.%m.%Y %H:%M")}\n'),
+        Bold(f'ТЗ #{task.create_at.strftime(conf.task_date_identifire_format)}\n'),
         Bold(f'Нужен ответ до {task.deadline.strftime("%d.%m.%Y %H:%M")}\n\n'),
         task.text
     )

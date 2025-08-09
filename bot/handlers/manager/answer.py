@@ -32,7 +32,7 @@ async def answer_callback(call: CallbackQuery, state: FSMContext):
     task = db.tech_task.get_by_id(task_id)
 
     if not task:
-        await call.message.answer(f'ТЗ #{task_id} не найдено, возможно оно было удалено')
+        await call.message.answer(f'ТЗ не найдено, возможно оно было удалено')
         return
     await state.update_data(user_id=user_id, task=task)
 
@@ -51,7 +51,7 @@ async def answer_question(msg: Message, state: FSMContext):
     rmsg = await try_send_message(
         chat_id=user_id,
         text=(
-            f'Ответ на ваш вопрос по ТЗ #{task.id} от {task.create_at.strftime(conf.datetime_format)}\n\n'
+            f'Ответ на ваш вопрос по ТЗ #{task.create_at.strftime(conf.task_date_identifire_format)}\n\n'
             f'{msg.text}'
         )
     )

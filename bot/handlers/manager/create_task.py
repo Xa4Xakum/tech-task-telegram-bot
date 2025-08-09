@@ -199,7 +199,7 @@ async def confirm_task(msg: Message, state: FSMContext):
                 added.append(j)
 
     await msg.answer(
-        f"✅ Техническое задание #{task.id} создано!",
+        f"✅ Техническое задание #{task.create_at.strftime(conf.task_date_identifire_format)} создано!",
         reply_markup=kb.to_menu
     )
     await state.clear()
