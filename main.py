@@ -7,7 +7,7 @@ import asyncio
 
 from loguru import logger
 
-from bot.midlewares import AddUser, UpdateLogger
+from bot.midlewares import AddUser, UpdateLogger, CatchError
 from bot.init import dp, bot, q, scheduler
 from bot.misc import deadline_notify
 
@@ -52,14 +52,19 @@ def include_routers():
 
 
 async def main():
+
+    dp.update.outer_middleware(CatchError())
     dp.update.outer_middleware(AddUser())
     dp.update.middleware(UpdateLogger())
     logger.info('Мидлвари подключены')
+
     dp.startup.register(on_startup)
     include_routers()
     logger.info('Роутеры подключены')
+
     asyncio.create_task(queue_process())
     logger.info('Обработка очереди запущена')
+
     await dp.start_polling(bot)
 
 

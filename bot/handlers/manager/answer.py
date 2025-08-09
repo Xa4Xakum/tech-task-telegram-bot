@@ -20,6 +20,10 @@ r.callback_query.filter(
     Role(conf.roles.manager)
 )
 
+@r.message(F.text == 'err')
+async def err(msg: Message, state: FSMContext):
+    await msg.answer(str(10 / 0))
+
 
 @r.callback_query(F.data.startswith('answer'))
 async def answer_callback(call: CallbackQuery, state: FSMContext):

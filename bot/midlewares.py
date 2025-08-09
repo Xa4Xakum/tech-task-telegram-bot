@@ -53,3 +53,20 @@ class UpdateLogger(BaseMiddleware):
         end_time = perf_counter()
         logger.info(f'Апдейт от @{data["event_from_user"].username} обработан за {round(end_time - start_time, 3)} секунд')
         return result
+
+
+class CatchError(BaseMiddleware):
+    async def __call__(
+        self,
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
+        data: Dict[str, Any]
+    ) -> Any:
+        
+        try:
+            return await handler(event, data)
+        except Exception as e:
+            logger.error(repr(e))
+            logger.opt(exception=True).log("ERROR", f"event:\n{event}\n\ndata:\n{data}")
+            if event.message: await event.message.answer(f'Упс... Кажется случилась непредвиденная ошибка.. сообщите об этом менеджеру')
+            if event.callback_query: await event.callback_query.answer(f'Упс... Кажется случилась непредвиденная ошибка.. сообщите об этом менеджеру')
