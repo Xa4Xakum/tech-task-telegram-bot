@@ -8,7 +8,7 @@ from database.init import db
 
 from ...keyboards import kb
 from ...filters import ChatType, Role
-from ...states import ConstructorStates
+from ...states import ConstructorStates, CreateAnswerStates
 from ...misc import parse_datetime, send_task_answer, correct_date_example
 
 r = Router()
@@ -36,7 +36,7 @@ async def answer_reply(msg: Message, state: FSMContext):
         return
 
     await msg.answer(f'Отправьте примерную стоимость выполнения ТЗ')
-    await state.set_state(ConstructorStates.get_price)
+    await state.set_state(CreateAnswerStates.get_price)
 
 
 @r.callback_query(F.data.startswith('answer'))
@@ -55,10 +55,10 @@ async def answer_callback(call: CallbackQuery, state: FSMContext):
 
     await call.message.answer(f'Отправьте примерную стоимость выполнения ТЗ')
     await state.update_data(task_id=task_id)
-    await state.set_state(ConstructorStates.get_price)
+    await state.set_state(CreateAnswerStates.get_price)
 
 
-@r.message(StateFilter(ConstructorStates.get_price))
+@r.message(StateFilter(CreateAnswerStates.get_price))
 async def get_price(msg: Message, state: FSMContext):
     await msg.answer(
         f'Оцените срок выполнения. Отправьте дату окончания выполнения в формате ДД.ММ.ГГГГ ЧЧ:ММ'
@@ -66,10 +66,10 @@ async def get_price(msg: Message, state: FSMContext):
         parse_mode='html'
     )
     await state.update_data(price=msg.text)
-    await state.set_state(ConstructorStates.get_deadline)
+    await state.set_state(CreateAnswerStates.get_deadline)
 
 
-@r.message(StateFilter(ConstructorStates.get_deadline))
+@r.message(StateFilter(CreateAnswerStates.get_deadline))
 async def get_deadline(msg: Message, state: FSMContext):
     date = parse_datetime(msg.text, conf.datetime_format)
     if not date:
@@ -85,10 +85,10 @@ async def get_deadline(msg: Message, state: FSMContext):
         reply_markup=kb.constructor.without_com
     )
     await state.update_data(date=date)
-    await state.set_state(ConstructorStates.get_com)
+    await state.set_state(CreateAnswerStates.get_com)
 
 
-@r.message(StateFilter(ConstructorStates.get_com))
+@r.message(StateFilter(CreateAnswerStates.get_com))
 async def get_com(msg: Message, state: FSMContext):
     com = msg.text
     data = await state.get_data()

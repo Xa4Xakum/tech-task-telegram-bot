@@ -103,5 +103,5 @@ async def show_answer(msg: Message, state: FSMContext):
         msg.from_user.id,
         task.id,
         msg.from_user.id,
-        reply_markup=kb.constructor.corusel_with_edit
+        reply_markup=kb.corusel_with_edit
     )

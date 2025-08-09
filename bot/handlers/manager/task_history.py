@@ -6,6 +6,7 @@ from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command, StateFilter
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.utils.formatting import Italic, Text
 from loguru import logger
 
 from config.init import conf
@@ -23,6 +24,22 @@ r.message.filter(
     ChatType('private'),
     Role(conf.roles.manager)
 )
+
+
+@r.message(F.text == kb.btn.manager.tasks_history.text)
+async def tasks_history(msg: Message, state: FSMContext):
+    await msg.answer('Какие ТЗ вы хотите увидеть?', reply_markup=kb.manager.choose_tasks_owner)
+    await state.set_state(ManagerStates.get_tasks_owner)
+
+
+@r.message(ManagerStates.get_tasks_owner)
+async def get_tasks_owner(msg: Message, state: FSMContext):
+    if msg.text == kb.btn.manager.my_tasks.text:
+        await state.update_data(owner='my')
+    elif msg.text != kb.btn.manager.other_tasks.text:
+        await msg.answer(f'Варианта {msg.text} не предусмотрено, выберите из предложенных.')
+        return
+    await send_corusel(msg, state)
 
 
 @r.message(
@@ -51,16 +68,16 @@ async def previous(msg: Message, state: FSMContext):
     F.text == kb.btn.manager.back_to_tasks.text,
     StateFilter(ManagerStates.task_answers)
 )
-@r.message(F.text == kb.btn.manager.tasks_history.text)
 async def send_corusel(msg: Message, state: FSMContext):
-    tasks = db.tech_task.get_all()
+    data = await state.get_data()
+    task_index: int = data.get('task_index', 0)
+    owner = data.get('owner')
+    if owner == 'my': tasks = db.tech_task.get_my(msg.from_user.id)
+    else: tasks = db.tech_task.get_not_my(msg.from_user.id)
 
     if len(tasks) == 0:
         await msg.answer('На моей памяти не было ни одного ТЗ...')
         return
-
-    data = await state.get_data()
-    task_index: int = data.get('task_index', 0)
 
     if task_index >= len(tasks): task_index = 0
     if task_index < 0: task_index = len(tasks) - 1
@@ -69,19 +86,19 @@ async def send_corusel(msg: Message, state: FSMContext):
     user_id = msg.from_user.id
     answers = db.answer.get_by_task(task_id=task.id)
     avarage = 0
-    answers_text = "Оценки:\n"
+    answers_text = ""
     for i in answers:
         user = db.user.get_by_id(i.user_id)
         username = user.username if user else None
         if not username: username = i.user_id
 
-        answers_text += f'<i>{username:<11} - до {i.deadline.strftime(conf.datetime_format)} за {i.price}</i>\n'
+        answers_text += f'{username:<11} - до {i.deadline.strftime(conf.datetime_format)} за {i.price}\n'
     if avarage != 0: avarage = round(avarage / len(answers), 2)
 
     start_text = (
         f'{task_index + 1}/{len(tasks)}\n'
         f'Кол-во ответов: {len(answers)}\n'
-        f'{answers_text}\n'
+        f'Оценки:\n'
     )
 
     if len(answers) > 0: markup = kb.manager.opened_tasks_corusel_with_show_answers
@@ -93,5 +110,5 @@ async def send_corusel(msg: Message, state: FSMContext):
         user_id,
         task.id,
         reply_markup=markup,
-        start_text=start_text
+        start_text=Text(start_text, Italic(answers_text), '\n')
     )

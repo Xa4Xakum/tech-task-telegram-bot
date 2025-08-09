@@ -10,6 +10,8 @@ class ManagerButtons():
     tasks_history = KeyboardButton(text='История ТЗ')
     show_answers = KeyboardButton(text='Ответы')
     back_to_tasks = KeyboardButton(text='Назад к ТЗ')
+    my_tasks = KeyboardButton(text='Мои ТЗ')
+    other_tasks = KeyboardButton(text='Другие ТЗ')
 
 
 class ConstructorButtons():
@@ -20,12 +22,8 @@ class ConstructorButtons():
     answer = InlineKeyboardButton(text='Ответить', callback_data='answer')
     answer_reply = KeyboardButton(text='Ответить')
     show_answer = KeyboardButton(text='Мой ответ')
-    edit = KeyboardButton(text='Изменить')
     continue_edit = KeyboardButton(text='Продолжить изменение')
     without_com = KeyboardButton(text='Без комментария')
-
-    deadline = KeyboardButton(text='Дедлайн')
-    price = KeyboardButton(text='Цену')
     comment = KeyboardButton(text='Комментарий')
     to_history = KeyboardButton(text='К истории ТЗ')
 
@@ -41,6 +39,10 @@ class Buttons():
     ready = KeyboardButton(text='Готово')
     skip = KeyboardButton(text='Пропустить')
     to_menu = KeyboardButton(text='В меню')
+    edit = KeyboardButton(text='Изменить')
+
+    deadline = KeyboardButton(text='Дедлайн')
+    price = KeyboardButton(text='Цену')
 
     next = KeyboardButton(text='Дальше')
     previous = KeyboardButton(text='Назад')

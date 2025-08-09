@@ -88,7 +88,7 @@ async def send_tech_task(
     chat_id: int,
     task_id: int,
     reply_markup: None | InlineKeyboardMarkup | ReplyKeyboardMarkup = None,
-    start_text: str = '',
+    start_text: str | Text = '',
 ):
     task = db.tech_task.get_by_id(task_id)
     if not task:

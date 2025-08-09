@@ -22,7 +22,7 @@ r.message.filter(
 
 
 @r.message(Command('start'))
-@r.message(F.text == kb.btn.to_menu.text, StateFilter('*'))
+@r.message(F.text == kb.btn.to_menu.text)
 async def start(msg: Message, state: FSMContext):
     await state.clear()
     await msg.answer('Выберите действие:', reply_markup=kb.constructor.menu)

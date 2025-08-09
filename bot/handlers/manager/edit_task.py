@@ -68,7 +68,7 @@ async def get_deadline(msg: Message, state: FSMContext):
 
 
 @r.message(
-    F.text == kb.btn.price.text,
+    F.text == kb.btn.constructor.price.text,
     EditAnswerStates.get_subject
 )
 async def price(msg: Message, state: FSMContext):

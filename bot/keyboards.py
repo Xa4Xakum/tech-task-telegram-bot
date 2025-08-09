@@ -48,6 +48,15 @@ class ManagerKeyboards(BaseKeyboard):
         )
 
     @property
+    def choose_tasks_owner(self):
+        return self.reply_markup_from_buttons(
+            self.btn.manager.my_tasks,
+            self.btn.manager.other_tasks,
+            self.btn.to_menu,
+            adjust=[2,1]
+        )
+
+    @property
     def opened_tasks_corusel_with_show_answers(self):
         return self.reply_markup_from_buttons(
             self.btn.previous,
@@ -98,20 +107,10 @@ class ConstructorKeyboards(BaseKeyboard):
         )
 
     @property
-    def corusel_with_edit(self):
-        return self.reply_markup_from_buttons(
-            self.btn.previous,
-            self.btn.constructor.edit,
-            self.btn.next,
-            self.btn.to_menu,
-            adjust=[3,1]
-        )
-
-    @property
     def edit_answer(self):
         return self.reply_markup_from_buttons(
-            self.btn.constructor.deadline,
-            self.btn.constructor.price,
+            self.btn.deadline,
+            self.btn.price,
             self.btn.constructor.comment,
             self.btn.constructor.to_history,
             adjust=[3,1]
@@ -181,6 +180,16 @@ class Keyboards(BaseKeyboard):
             self.btn.next,
             self.btn.to_menu,
             adjust=[2,1]
+        )
+
+    @property
+    def corusel_with_edit(self):
+        return self.reply_markup_from_buttons(
+            self.btn.previous,
+            self.btn.edit,
+            self.btn.next,
+            self.btn.to_menu,
+            adjust=[3,1]
         )
 
 

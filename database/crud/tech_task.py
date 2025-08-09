@@ -66,6 +66,26 @@ class Get(BaseCrud):
                 desc(TechTask.update_at)
             ).all()
 
+    def get_not_my(self, owner_id: int) -> List[TechTask]:
+        with self.session() as s:
+            return s.query(
+                TechTask
+            ).filter(
+                TechTask.owner_id != owner_id
+            ).order_by(
+                desc(TechTask.update_at)
+            ).all()
+
+    def get_my(self, owner_id: int) -> List[TechTask]:
+        with self.session() as s:
+            return s.query(
+                TechTask
+            ).filter(
+                TechTask.owner_id == owner_id
+            ).order_by(
+                desc(TechTask.update_at)
+            ).all()
+
     def get_with_deadline_smaller_than(self, deadline: datetime) -> List[TechTask]:
         with self.session() as s:
             return s.query(
