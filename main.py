@@ -50,8 +50,19 @@ def include_routers():
     include_constructor_routers()
     include_manager_routers()
 
+def set_loggers():
+    logger.add(
+        'logs/{time}.log',
+        level='INFO',
+        backtrace=True,
+        diagnose=True,
+        rotation='10mb',
+        retention='1 week',
+        catch=True
+    )
 
 async def main():
+    set_loggers()
 
     dp.update.outer_middleware(CatchError())
     dp.update.outer_middleware(AddUser())

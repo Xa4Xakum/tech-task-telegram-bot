@@ -1,5 +1,6 @@
 import os
 from typing import Any, List
+from datetime import datetime, timedelta
 
 from dotenv import load_dotenv
 
@@ -61,9 +62,13 @@ class Config():
 
     @property
     def task_date_identifire_format(self) -> str:
-        return "%Y%m%d%H%M"
+        return "%y%m%d%H%M"
 
     @property
     def db_conneciton(self) -> str:
         '''Подключение к бд'''
         return 'sqlite:///config/Xakum.db'
+
+
+    def get_current_datetime(self) -> datetime:
+        return datetime.now() + timedelta(hours=2)

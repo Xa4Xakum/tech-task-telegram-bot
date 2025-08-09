@@ -6,6 +6,8 @@ from sqlalchemy import (
     Integer, String, ForeignKey, DateTime
 )
 
+from config.init import conf
+
 from .base import Base
 
 
@@ -33,8 +35,8 @@ class TechTask(Base):
     owner_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     deadline: Mapped[datetime] = mapped_column(DateTime)
     status: Mapped[str] = mapped_column(String)
-    create_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    update_at: Mapped[datetime] = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now)
+    create_at: Mapped[datetime] = mapped_column(DateTime, default=conf.get_current_datetime)
+    update_at: Mapped[datetime] = mapped_column(DateTime, onupdate=conf.get_current_datetime, default=conf.get_current_datetime)
 
     media: Mapped[List['Media']] = relationship(
         'Media',

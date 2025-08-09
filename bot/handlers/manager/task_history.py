@@ -32,19 +32,24 @@ async def tasks_history(msg: Message, state: FSMContext):
     await state.set_state(ManagerStates.get_tasks_owner)
 
 
-@r.message(ManagerStates.get_tasks_owner)
+@r.message(
+    F.text == kb.btn.manager.opened_tasks.text,
+)
+async def opened_tasks(msg: Message, state: FSMContext):
+    await state.update_data(category='opened')
+    await send_corusel(msg, state)
+
+
+@r.message(
+    F.text != kb.btn.manager.opened_tasks.text,
+    ManagerStates.get_tasks_owner
+)
 async def get_tasks_owner(msg: Message, state: FSMContext):
     if msg.text == kb.btn.manager.my_tasks.text:
         await state.update_data(category='my')
     elif msg.text != kb.btn.manager.all_tasks.text:
         await msg.answer(f'Варианта {msg.text} не предусмотрено, выберите из предложенных.')
         return
-    await send_corusel(msg, state)
-
-
-@r.message(F.text == kb.btn.manager.opened_tasks.text)
-async def opened_tasks(msg: Message, state: FSMContext):
-    await state.update_data(category='opened')
     await send_corusel(msg, state)
 
 
